@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="utf-8" />	
+	<title>atomantic/jquery.codeassist @ GitHub</title>
+	<!--[if IE]>
+		<script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+	<![endif]-->
+	<link rel="stylesheet" type="text/css" media="all" href="jquery.codeassist.css"/>
+    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+	<script type="text/javascript" src="jquery.codeassist.js"></script>
+</head>
+<body id="index" class="home">
+	<p>This is a demo of the jquery.codeassist plugin, written by <a href="http://atomantic.github.com">Adam Eivy</a> and hosted on <a href="http://github.com/atomantic/jquery.jquerycodeassist">GitHub</a></p>
+	
+	<h1>Basic (Defaults)</h1>
+	<p>Enter some text and type a % character to bring up the menu.</p>
+	<textarea id="default"></textarea>
+	
+	<h1>Dollar Sign</h1>
+	<p>Enter some text and type a $ character to bring up the menu.</p>
+	<textarea id="dollar"></textarea>
+	
+	<h1>Brackets</h1>
+	<p>Enter some text and type a [ character to bring up the menu.</p>
+	<textarea id="brackets"></textarea>
+	
+	<script type="text/javascript">
+		$(function(){
+			$('#default').codeassist();
+			
+			$('#dollar').codeassist({
+				key:'$'
+			});
+			
+			$('#brackets').codeassist({
+				key:'[',
+				closeKey:']',
+				list:[
+					'UserID',
+					'Avatar',
+					'NickName',
+					'ProfileURL'
+				]
+			});
+		})
+	</script>
+</body>
+</html>

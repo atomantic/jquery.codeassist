@@ -1,0 +1,30 @@
+/**
+ * jquery.codeassist adds a code assist menu to configured textarea and input boxes
+ * This allows you to suggest code based on a user triggering the helper with a keycode (e.g. %, $, or <)
+ * 
+ * @version 1.0
+ * @requires jquery 1.4.2 or >
+ * @usage: 
+ * @author Copyright (c) 2010 Adam Eivy (antic | atomantic)
+ * @license Dual licensed under the MIT and GPL licenses:
+ *   http://www.opensource.org/licenses/mit-license.php
+ *   http://www.gnu.org/licenses/gpl.html
+ */
+.codeassistWrap{
+	position:relative;
+}
+.codeassist {
+	display:none;
+	position:absolute;
+	top:0;
+	cursor:pointer;
+	padding:5px;
+	border:1px solid #ccc;
+	background-color:#def;
+}
+.codeassist > div:hover {
+	background-color:#cde;
+}
+.codeassist span {
+	background-color:#ff0;
+}
