@@ -24,3 +24,5 @@ Additionally, this code base can be used to create code suggestions as an inline
 			'Avatar'
 		]
 	});
+#Demo:#
+[http://atomantic.github.com/jquery.codeassist/](http://atomantic.github.com/jquery.codeassist/)
