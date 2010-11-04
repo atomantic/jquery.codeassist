@@ -22,7 +22,7 @@
 
 	        // Add a reverse reference to the DOM object
 	        base.$el.data("codeassist", base);
-	
+	/*
 			base.delim = {
 				'%':{
 					k:53, // unicode character
@@ -39,6 +39,7 @@
 					k:221
 				}
 			};
+		*/
 			
 			base.search = []; // cache for built list with open & close keys (for search)
 
@@ -50,7 +51,7 @@
 					if(!base.search[i]){
 						base.search[i] = base.opt.key+base.opt.list[i]+(base.opt.closeKey?base.opt.closeKey:'');
 					}
-					list+='<div class="ca_'+i+'">'+base.search[i]+'</div>';
+					list+='<div class="ca_'+i+'">'+this.htmlEncode(base.search[i])+'</div>';
 				}
 				// create and cache
 				base.$ca = base.$el.keydown(base.keydown).keyup(base.keyup).wrap('<div class="codeassistWrap">')
@@ -60,45 +61,28 @@
 							.click(base.helperClk).end();
 				return base.$el;
 	        };
-			base.keydown = function(e){
-				if(e.which!==13 || base.$ca.css('display') === 'none'){ // not enter or helper not shown
-					return;
+	
+	
+			base.helperClk = function(){
+				var t = $(this), 					// selected value
+					$el = t.parent().hide().prev(), // jquery input element
+					el = $el.get(0), 				// input dom element 
+					v = t.text().replace(t.find('span').text(),''), // value to add to input
+					cv = $el.val(); 				// current value of input
+				// handle insert at position (in case they are adding text in the middle)
+				if (el.setSelectionRange){
+					$el.val(cv.substring(0,el.selectionStart) + v + cv.substring(el.selectionStart,el.selectionEnd) + cv.substring(el.selectionEnd,cv.length));
+				}else if (document.selection && document.selection.createRange) {
+					$el.focus();
+				    var range = document.selection.createRange();
+				    range.text = v + range.text;
 				}
-				var hi = base.$ca.find('span');
-				if(hi.length){
-					$(hi.get(0)).parent().click(); // act like you clicked the first match
-					e.preventDefault();	
-				}
+
+				// trigger update events
+				// this is only necessary if you have listeners on blur 
+				// to update other fields (such as a preview pane)
+				$el.blur().focus();
 			};
-	        base.keyup = function(e){
-				var t = $(this),	// input el
-					el = t.get(0),	// input dom element
-					p = t.parent(), // wrapper
-					r = base.delim[base.opt.key], // rules
-					v = t.val(), 	// current input value
-					o = t.offset(), // position of input el
-					before = '';
-				// get position of entry
-				if (el.selectionStart!==undefined){
-					before = v.substring(0,el.selectionStart);
-				}else{
-					t.focus();
-					var range = document.selection.createRange();
-					range.moveStart ('character', -v.length);
-					before = v.substring(0,range.text.length);
-				}		
-				var found = base.hilight(before.substring(before.lastIndexOf(base.opt.key),before.length));
-				
-				
-				if((r.s && !e.shiftKey) || e.which !== r.k){ // no shift when required or not our value anyway
-					if(!found){ // nothing matched
-						base.$ca.hide();
-					}
-				}else{
-					// position at mouse and show
-					base.$ca.css('left',codeassist.pageX-o.left).css('top',codeassist.pageY-o.top).show();
-				}
-	        };
 			/**
 			 * highlight text from suggestion list
 			 * 
@@ -115,31 +99,59 @@
 						el.html(s[i]);
 						continue;
 					}
-					el.html('<span>'+s[i].substring(0,q.length)+'</span>'+s[i].substring(q.length,s[i].length));
+					el.html('<span>'+this.htmlEncode(s[i].substring(0,q.length))+'</span>'+this.htmlEncode(s[i].substring(q.length,s[i].length)));
 					m = true;
 				}
 				return m;
 			};
-			base.helperClk = function(){
-				var t = $(this), 					// selected value
-					$el = t.parent().hide().prev(), // jquery input element
-					el = $el.get(0), 				// input dom element 
-					v = t.html().replace(/<span(.)*\/span>/i,''), // value to add to input
-					cv = $el.val(); 				// current value of input
-				// handle insert at position (in case they are adding text in the middle)
-				if (el.setSelectionRange){
-					$el.val(cv.substring(0,el.selectionStart) + v + cv.substring(el.selectionStart,el.selectionEnd) + cv.substring(el.selectionEnd,cv.length));
-				}else if (document.selection && document.selection.createRange) {
-					$el.focus();
-				    var range = document.selection.createRange();
-				    range.text = v + range.text;
-				}
-
-				// trigger update events
-				// this is only necessary if you have listeners on blur 
-				// to update other fields (such as a preview pane)
-				$el.blur().focus();
+			base.htmlEncode = function(v){ 
+			  return $('<div/>').text(v).html(); 
 			};
+			base.htmlDecode = function(v){ 
+			  return $('<div/>').html(v).text(); 
+			};
+			base.keydown = function(e){
+				if(e.which!==13 || base.$ca.css('display') === 'none'){ // not enter or helper not shown
+					return;
+				}
+				var hi = base.$ca.find('span');
+				if(hi.length){
+					$(hi.get(0)).parent().click(); // act like you clicked the first match
+					e.preventDefault();	
+				}
+			};
+	        base.keyup = function(e){
+				var t = $(this),	// input el
+					el = t.get(0),	// input dom element
+					p = t.parent(), // wrapper
+					//r = base.delim[base.opt.key], // rules
+					v = t.val(), 	// current input value
+					o = t.offset(), // position of input el
+					before = '';
+				// get position of entry
+				if (el.selectionStart!==undefined){
+					before = v.substring(0,el.selectionStart);
+				}else{
+					t.focus();
+					var range = document.selection.createRange();
+					range.moveStart ('character', -v.length);
+					before = v.substring(0,range.text.length);
+				}
+				// last character before cursor
+				var last = before[before.length-1],
+					found = base.hilight(before.substring(before.lastIndexOf(base.opt.key),before.length));
+				
+				//if((r.s && !e.shiftKey) || e.which !== r.k){ // no shift when required or not our value anyway
+				if(last!==base.opt.key){ // not a match for trigger
+					if(!found){ // nothing matched in search
+						base.$ca.hide(); // in case the helper is active
+					}
+				}else{
+					// position at mouse and show
+					// TODO: make mouse position a config option (alt use input right or bottom, later use cursor pixel position--pain)
+					base.$ca.css('left',codeassist.pageX-o.left).css('top',codeassist.pageY-o.top).show();
+				}
+	        };
 
 	        // Run
 	        base.init();
@@ -147,8 +159,8 @@
 
 	    $.codeassist.defaultOptions = {
 			key:'%', // the trigger for showing our helper menu
-			closeKey:false,
-			list:['FirstName','LastName'] // valid suggestions
+			closeKey:false, // closing symbol (optional)
+			list:['First Name','Last Name'] // valid suggestions
 	    };
 
 	    $.fn.codeassist = function(opt){
