@@ -138,8 +138,9 @@
 					before = v.substring(0,range.text.length);
 				}
 				// last character before cursor
-				var last = before[before.length-1],
-					found = base.hilight(before.substring(before.lastIndexOf(base.opt.key),before.length));
+				var l = before.length,
+					last = before.substring(l-1,l),
+					found = base.hilight(before.substring(before.lastIndexOf(base.opt.key),l));
 				
 				//if((r.s && !e.shiftKey) || e.which !== r.k){ // no shift when required or not our value anyway
 				if(last!==base.opt.key){ // not a match for trigger
