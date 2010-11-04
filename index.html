@@ -29,6 +29,12 @@
 	<p>Enter some text and type a &lt; character to bring up the menu.</p>
 	<textarea id="htmlbrackets"></textarea>
 	
+	<h1>HTML Open/Close</h1>
+	<p>This is NOT meant to be an HTML helper (there are other libraries for that)--but by a sort of request:</p>
+	<p>Enter some text and type a &lt; character to bring up the menu.</p>
+	<p>Next enter the html value and type &lt;/.</p>
+	<textarea id="html"></textarea>
+	
 	<script type="text/javascript">
 		$(function(){
 			$('#default').codeassist();
@@ -54,7 +60,17 @@
 					'UserID',
 					'Avatar',
 					'NickName',
-					'ProfileURL'
+					'/ProfileURL'
+				]
+			});
+			$('#html').codeassist({
+				key:'<',
+				closeKey:'>',
+				list:[
+					'h1',
+					'p',
+					'/h1',
+					'/p'
 				]
 			});
 		})
